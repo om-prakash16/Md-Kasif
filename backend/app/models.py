@@ -12,6 +12,7 @@ Naming convention:
 
 from __future__ import annotations
 from typing import Optional, List, Literal
+from datetime import datetime
 from pydantic import BaseModel, Field
 
 
@@ -38,6 +39,8 @@ class ScreeningDetails(BaseModel):
     location: str            = Field(..., example="Remote")
     work_preference: str     = Field(..., example="New York (Remote)", alias="workPreference")
     skills: List[str]        = Field(default_factory=list, example=["Java", "Spring Boot"])
+    matched_skills: Optional[List[str]] = Field(default_factory=list, alias="matchedSkills")
+    missing_skills: Optional[List[str]] = Field(default_factory=list, alias="missingSkills")
     ai_summary: str          = Field(..., example="Strong backend engineer…", alias="aiSummary")
 
     class Config:
@@ -56,7 +59,7 @@ class CandidateOut(BaseModel):
     status: CandidateStatus
     match_score: int         = Field(..., ge=0, le=100, alias="matchScore")
     response_time: str       = Field(..., alias="responseTime")
-    submitted_at: str        = Field(..., alias="submittedAt")
+    submitted_at: datetime    = Field(..., alias="submittedAt")
     screening: Optional[ScreeningDetails] = None
 
     class Config:
@@ -111,7 +114,7 @@ class JobCreate(JobBase):
 
 class JobOut(JobBase):
     id: int
-    created_at: str = Field(..., alias="createdAt")
+    created_at: datetime = Field(..., alias="createdAt")
     company_id: int = Field(..., alias="companyId")
 
     class Config:

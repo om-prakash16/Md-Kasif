@@ -72,6 +72,8 @@ class ScreeningDetail(Base):
     location = Column(String)
     work_preference = Column(String)
     skills = Column(JSON)
+    matched_skills = Column(JSON, nullable=True)
+    missing_skills = Column(JSON, nullable=True)
     ai_summary = Column(String)
 
     candidate = relationship("Candidate", back_populates="screening_details")

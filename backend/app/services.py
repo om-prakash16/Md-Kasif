@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app import config, models_db, models
-
 # ── Stats ──────────────────────────────────────────────────
 def compute_stats(db: Session, company_id: int) -> models.DashboardStats:
     """Compute aggregate stats for a specific company."""
@@ -39,10 +38,11 @@ def list_recruiters(db: Session, company_id: int):
     return recruiters
 
 def create_recruiter(db: Session, recruiter_in: models.RecruiterCreate, company_id: int):
+    from app import auth
     # Quick dirty hash for mock
     new_user = models_db.User(
         email=recruiter_in.email,
-        hashed_password="hashed_" + recruiter_in.password,
+        hashed_password=auth.get_password_hash(recruiter_in.password),
         full_name=recruiter_in.full_name,
         role="recruiter",
         company_id=company_id
@@ -117,6 +117,8 @@ async def process_resume_for_job(db: Session, job_id: int, filename: str, file_b
         location="Not Specified",
         work_preference="Not Specified",
         skills=[s.title() for s in resume_skills],
+        matched_skills=[s.title() for s in matched_skills],
+        missing_skills=[s.title() for s in missing_skills],
         ai_summary=f"Match score: {match_score}%. Matched: {', '.join(matched_skills[:5])}. Missing: {', '.join(missing_skills[:5])}."
     )
     
